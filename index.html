@@ -34,7 +34,7 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background-color: #e6e2da; /* 波の階調を引き立たせるため、ベースを僅かに深く */
+            background-color: #e6e2da; 
             display: flex;
             flex-direction: column; 
             justify-content: center;
@@ -57,27 +57,25 @@
             pointer-events: none;
         }
 
-        /* 【強調修正】漆喰壁の奥で、光と影がダイナミックに移ろう陰翳レイヤー */
+        /* 漆喰壁の奥で、光と影がダイナミックに移ろう陰翳レイヤー */
         .color-stream {
             position: absolute;
             top: 0; left: 0; width: 200%; height: 100%;
-            /* コントラストを強め、薄墨の影（暗部）と日差し（明部）のメリハリを強調 */
             background: linear-gradient(to left, 
-                rgba(206, 198, 183, 0.7), /* しっかりとした土壁の影 */
-                rgba(185, 195, 178, 0.5), /* 畳の深い翳り */
-                rgba(245, 242, 235, 0.9), /* 強く差し込む逆光・障子の白 */
-                rgba(170, 176, 180, 0.6), /* 濃い薄墨・夕暮れの深い影 */
+                rgba(206, 198, 183, 0.7), 
+                rgba(185, 195, 178, 0.5), 
+                rgba(245, 242, 235, 0.9), 
+                rgba(170, 176, 180, 0.6), 
                 rgba(206, 198, 183, 0.7)  
             );
             background-size: 50% 100%;
             z-index: 1;
-            /* ease-in-out に変更し、波が寄せては返すような有機的な緩急をつける */
             animation: streamMoveRightToLeft 16s ease-in-out infinite; 
         }
 
         @keyframes streamMoveRightToLeft {
             0% { transform: translateX(0%); }
-            50% { transform: translateX(-25%); } /* 途中で少し溜まりを作るような動き */
+            50% { transform: translateX(-25%); } 
             100% { transform: translateX(-50%); } 
         }
 
@@ -88,16 +86,16 @@
             text-align: center;
         }
 
-        /* フォントサイズを小さくし、太く重量感を持たせた「SAISAKI」 */
+        /* 【修正】サイズを極小（2.0rem）にし、余白（0.8em）をさらに広げた「SAISAKI」 */
         .cover-title {
             font-family: "Klee One", serif; 
-            font-size: 3.8rem;  
+            font-size: 2.0rem;  /* 3.8remからさらに半分近くまで削ぎ落とし */
             font-weight: 600;   
-            letter-spacing: 0.5em; 
-            text-indent: 0.5em;
+            letter-spacing: 0.8em; /* 文字の存在感を際立たせる贅沢な余白 */
+            text-indent: 0.8em;
             user-select: none;
             display: inline-block;
-            color: #9c9687; /* 波の強調に合わせて、文字のベース影も僅かに深く */
+            color: #9c9687; 
             
             text-shadow: 1px 1px 2px rgba(242, 240, 235, 0.6);
         }
@@ -274,9 +272,9 @@
          * ----------------------------------------- */
         @media (max-width: 768px) {
             .cover-title {
-                font-size: 2.2rem; 
-                letter-spacing: 0.3em;
-                text-indent: 0.3em;
+                font-size: 1.4rem; /* スマホでも品を保つ極小サイズ */
+                letter-spacing: 0.4em;
+                text-indent: 0.4em;
             }
             
             .work-page {
