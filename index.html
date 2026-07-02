@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+
+    <style>
+        /* -----------------------------------------
+         * 共通・ベーススタイル
+         * ----------------------------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f5f5; /* 静かで冷たい白 */
+            color: #555555;            
+            font-family: "Times New Roman", "Yu Mincho", "遊明朝", serif;
+            overflow-x: hidden;
+        }
+
+        /* -----------------------------------------
+         * 1. 表紙（COVER PAGE）
+         * ----------------------------------------- */
+        .cover-page {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* ドットの型抜き背景 */
+        .matrix-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(transparent 2px, #f5f5f5 2px);
+            background-size: 40px 40px; 
+            z-index: 2; 
+        }
+
+        /* ドットの奥を右から左へ流れるパステルカラーレイヤー */
+        .color-stream {
+            position: absolute;
+            top: 0; left: 0; width: 200%; height: 100%;
+            background: linear-gradient(to left, 
+                rgba(255, 179, 179, 0.6), 
+                rgba(255, 230, 153, 0.6), 
+                rgba(179, 240, 187, 0.6), 
+                rgba(179, 217, 255, 0.6), 
+                rgba(255, 179, 179, 0.6)  
+            );
+            background-size: 50% 100%;
+            z-index: 1;
+            animation: streamMoveRightToLeft 8s linear infinite;
+        }
+
+        @keyframes streamMoveRightToLeft {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* タイトルエリア全体の制御 */
+        .title-container {
+            position: relative;
+            z-index: 3; 
+            text-align: center;
+        }
+
+        /* 圧倒的に太いビット文字「FOTO」 */
+        .cover-title {
+            font-family: "Dela Gothic One", sans-serif; 
+            font-size: 8rem; 
+            font-weight: normal;
+            letter-spacing: 0.2em; 
+            text-indent: 0.2em;
+            user-select: none;
+            display: inline-block;
+            color: #cccccc; 
+            
+            text-shadow: 
+                2px 2px 0px #f5f5f5,
+                -2px -2px 0px #f5f5f5,
+                2px 2px 0px #f5f5f5,
+                -2px 2px 0px #f5f5f5;
+        }
+
+        /* 文字が左から右へ、グレー（漆黒）に光る仕掛け */
+        .cover-title span {
+            display: inline-block;
+            animation: waveFlashInverse 3s infinite ease-in-out;
+        }
+
+        .cover-title span:nth-child(1) { animation-delay: 0.0s; } 
+        .cover-title span:nth-child(2) { animation-delay: 0.15s; } 
+        .cover-title span:nth-child(3) { animation-delay: 0.3s; } 
+        .cover-title span:nth-child(4) { animation-delay: 0.45s; } 
+
+        @keyframes waveFlashInverse {
+            0%, 60%, 100% {
+                color: #cccccc; 
+            }
+            20% {
+                color: #111111; 
+            }
+            35% {
+                color: #666666; 
+            }
+        }
+
+        /* FOTOの下の小さくて細い文字 */
+        .cover-subtitle {
+            font-family: "Times New Roman", serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            color: #999999; 
+            margin-top: 1.5rem;
+            opacity: 0.8;
+            user-select: none;
+        }
+
+        /* スクロールのビット文字 */
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            font-family: "Dela Gothic One", sans-serif; 
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            
+            background: linear-gradient(to right, #999, #333, #777);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -10px); }
+            60% { transform: translate(-50%, -5px); }
+        }
+
+        /* -----------------------------------------
+         * 2. WORK（ギャラリーページ）
+         * ----------------------------------------- */
+        .work-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10rem 2rem;
+        }
+
+        .photo-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 4rem; 
+        }
+
+        .matrix-item {
+            background-color: #eaeaea; 
+            aspect-ratio: 1 / 1; 
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: border-color 0.5s;
+        }
+
+        .matrix-item:hover {
+            border-color: #999999;
+        }
+
+        .matrix-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%) contrast(100%) brightness(95%);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @media (hover: hover) {
+            .matrix-item:hover img {
+                filter: grayscale(0%) contrast(100%) brightness(100%);
+                transform: scale(1.03);
+            }
+        }
+
+        /* -----------------------------------------
+         * 3. 全画面表示（ライトボックスモーダル）
+         * ----------------------------------------- */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.98); 
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 1rem; 
+        }
+
+        .fullscreen-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fullscreen-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            transform: scale(0.95);
+            transition: transform 0.5s ease;
+        }
+
+        .fullscreen-overlay.active .fullscreen-img {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem; right: 1.5rem;
+            color: #888;
+            font-size: 2.5rem; 
+            cursor: pointer;
+            transition: color 0.3s;
+            user-select: none;
+            z-index: 1001;
+        }
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* -----------------------------------------
+         * 4. フッター
+         * ----------------------------------------- */
+        footer {
+            padding: 6rem 2rem;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer-instagram {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #777777;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+
+        .footer-instagram:hover {
+            color: #111111;
+            border-bottom-color: #111111;
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            color: #999999;
+        }
+
+        /* -----------------------------------------
+         * 5. スマートフォン向けレスポンシブ調整
+         * ----------------------------------------- */
+        @media (max-width: 768px) {
+            .cover-title {
+                font-size: 4rem; 
+                letter-spacing: 0.1em;
+                text-indent: 0.1em;
+            }
+            
+            .cover-subtitle {
+                font-size: 0.75rem;
+                letter-spacing: 0.2em;
+                margin-top: 1rem;
+            }
+            
+            .work-page {
+                padding: 6rem 1.5rem; 
+            }
+            
+            .photo-matrix {
+                gap: 2rem; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="cover-page">
+        <div class="matrix-bg"></div>
+        <div class="color-stream"></div>
+        
+        <div class="title-container">
+            <h1 class="cover-title">
+                <span>F</span><span>O</span><span>T</span><span>O</span>
+            </h1>
+            <p class="cover-subtitle">portfolio by saisaki</p>
+        </div>
+        
+        <div class="scroll-hint">▼ SCROLL</div>
+    </section>
+
+    <main class="work-page">
+        <div class="photo-matrix" id="photoMatrix"></div>
+    </main>
+
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <img src="" alt="Fullscreen" class="fullscreen-img" id="fullscreenImg">
+    </div>
+
+    <footer>
+        <a href="https://www.instagram.com/anko.pho" target="_blank" rel="noopener noreferrer" class="footer-instagram">
+            Instagram
+        </a>
+        <p class="footer-copyright">&copy; 2026 saisaki. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 設定：あなたの写真の設定
+        // ==========================================
+        const TOTAL_PHOTOS = 15;         
+        const IMAGE_PREFIX = "photo";    
+        const IMAGE_EXT = ".jpg";        
+
+        // ==========================================
+        // 写真マトリクスの自動生成
+        // ==========================================
+        const matrixContainer = document.getElementById('photoMatrix');
+
+        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
+            const item = document.createElement('div');
+            item.className = 'matrix-item';
+
+            const img = document.createElement('img');
+            img.src = `${IMAGE_PREFIX}${i}${IMAGE_EXT}`; 
+            img.alt = `Work ${i}`;
+            img.loading = 'lazy'; 
+
+            item.appendChild(img);
+            matrixContainer.appendChild(item);
+        }
+
+        // ==========================================
+        // 全画面表示（モーダル）の制御
+        // ==========================================
+        const overlay = document.getElementById('fullscreenOverlay');
+        const fullscreenImg = document.getElementById('fullscreenImg');
+        const closeBtn = document.getElementById('closeBtn');
+        
+        matrixContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'IMG') {
+                fullscreenImg.src = e.target.src;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        const closeOverlay = () => {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => { fullscreenImg.src = ''; }, 500);
+        };
+
+        closeBtn.addEventListener('click', closeOverlay);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeOverlay();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) closeOverlay();
+        });
+    </script>
+
+</body>
+</html>
