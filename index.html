@@ -23,6 +23,7 @@
         }
 
         body {
+            /* ベースをわずかに赤みを帯びた映画館の闇に設定 */
             background-color: #0b0707; 
             color: #a6a092;            
             font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
@@ -30,36 +31,44 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 【修正】明滅の速度を3倍（6秒周期）にスピードアップ */
+        /* 【抜本的修正】グラデーションを反転：内を「漆黒」に、外を「蠢く朱赤」へ */
         .color-stream {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 35% 40%, rgba(220, 0, 0, 0.25) 0%, transparent 45vmax),
-                        radial-gradient(circle at 65% 60%, rgba(180, 5, 5, 0.22) 0%, transparent 45vmax);
+            /* * 中心（10%）を完全な黒（#000000）にし、
+             * そこから外側（45vmax以降）へ向かって、
+             * 生々しく深い朱赤（#bd0000）が染み出していくような構造に変更 
+             */
+            background: radial-gradient(circle at 50% 50%, 
+                #000000 10%, 
+                rgba(189, 0, 0, 0.22) 45vmax, 
+                rgba(189, 0, 0, 0.28) 60vmax, 
+                #000000 100%
+            );
             z-index: 1;
-            /* 18s から 6s に変更し、脈動するような速度感に */
-            animation: clearZappingWave 6s ease-in-out infinite alternate;
+            /* 蠢く速度感（6s周期）はそのまま維持 */
+            animation: delicateZappingWave 6s ease-in-out infinite alternate;
             filter: blur(12px); 
             pointer-events: none;
         }
 
-        @keyframes clearZappingWave {
+        @keyframes delicateZappingWave {
             0% { 
-                transform: scale(0.85) rotate(0deg); 
-                opacity: 0.15; 
+                transform: scale(0.95) rotate(0deg); 
+                opacity: 0.2; /* 闇が圧し掛かる瞬間 */
             }      
             50% { 
-                transform: scale(1.15) translate(-2%, 2%) rotate(2deg); 
-                opacity: 1.0;  
+                transform: scale(1.1) translate(-2%, 2%) rotate(2deg); 
+                opacity: 1.0;  /* 中心を黒に保ったまま、外側の赤がじわっと染み出す瞬間 */
             }    
             100% { 
                 transform: scale(0.9) translate(2%, -2%) rotate(-1deg); 
-                opacity: 0.25; 
+                opacity: 0.3; 
             }   
         }
 
         /* -----------------------------------------
-         * 1. 表紙（COVER PAGE）
+         * 1. 表紙（COVER PAGE：中心に写真を配置）
          * ----------------------------------------- */
         .cover-page {
             position: relative;
@@ -81,8 +90,9 @@
             max-width: 480px; 
             aspect-ratio: 2 / 3; 
             overflow: hidden;
-            border: 1px solid #1c1313; 
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            /* 写真の周囲を闇（漆黒）で溶け込ませる */
+            border: 1px solid #141111;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
         }
 
         .hero-photo-wrapper img {
@@ -92,7 +102,7 @@
             filter: contrast(105%) brightness(95%);
         }
 
-        /* タイトルエリア（写真の上に重ねる） */
+        /* タイトルエリア（写真の中心に重ねる） */
         .title-container {
             position: absolute;
             top: 50%;
@@ -104,7 +114,7 @@
             pointer-events: none; 
         }
 
-        /* 品格のある白に近いグレー（#e6e2dc）のSaisakiロゴ */
+        /* 品格のある冷淡なグレーのSaisakiロゴ */
         .cover-title {
             font-family: "Pirata One", serif; 
             font-size: 2.8rem;  
@@ -112,7 +122,7 @@
             letter-spacing: 0.3em; 
             text-indent: 0.3em;
             user-select: none;
-            color: #e6e2dc; 
+            color: #e6e2dc; /* 白土や印画紙のハイライトを思わせる冷たいグレー */
             
             /* 文字が鋭く、かつ重厚に浮き上がるための立体シャドウ */
             text-shadow: 
@@ -128,7 +138,7 @@
             50% { opacity: 1; filter: contrast(115%); }
         }
 
-        /* グレーに統一されたスクロールサイン */
+        /* グレーに統一されたスクロールサイン ▼ */
         .scroll-hint {
             position: absolute;
             bottom: 3rem;
@@ -184,9 +194,10 @@
         }
 
         @media (hover: hover) {
+            /* 写真にホバーしたときだけ、闇からソナチネの朱赤が滲み出る */
             .matrix-item:hover {
-                border-color: #b80000;
-                box-shadow: 0 0 30px rgba(184, 0, 0, 0.15);
+                border-color: #bd0000;
+                box-shadow: 0 0 30px rgba(189, 0, 0, 0.25);
             }
             .matrix-item:hover img {
                 filter: grayscale(10%) contrast(105%) brightness(100%);
@@ -236,7 +247,7 @@
             z-index: 1001;
         }
         .close-btn:hover {
-            color: #b80000;
+            color: #bd0000;
         }
 
         /* -----------------------------------------
@@ -262,8 +273,8 @@
         }
 
         .footer-instagram:hover {
-            color: #b80000;
-            border-bottom-color: #b80000;
+            color: #bd0000;
+            border-bottom-color: #bd0000;
         }
 
         .footer-copyright {
@@ -294,9 +305,9 @@
 </head>
 <body>
 
+    <div class="color-stream"></div>
+
     <section class="cover-page">
-        <div class="color-stream"></div>
-        
         <div class="hero-photo-wrapper">
             <img src="_EPS3001.jpg" alt="Cover Photo">
         </div>
