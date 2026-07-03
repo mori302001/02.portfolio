@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Portfolio</title>
+    <title>Saisaki</title>
     
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23bd0000'/></svg>" type="image/svg+xml">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400&display=swap" rel="stylesheet">
 
     <style>
         /* -----------------------------------------
-         * 共通・ベーススタイル（和の静寂）
+         * 共通・ベーススタイル（シネマティック・ダーク）
          * ----------------------------------------- */
         * {
             margin: 0;
@@ -20,11 +23,29 @@
         }
 
         body {
-            background-color: #f2f0eb; /* 漆喰や白土壁のような、温かみと陰影のあるマットな生成り色 */
-            color: #3a3935;            /* 炭のような深い墨色 */
+            background-color: #0b0707; 
+            color: #a6a092;            
             font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+        }
+
+        /* 背景の奥底で怪しく蠢く薄い朱赤のエフェクト */
+        .color-stream {
+            position: absolute;
+            top: -20%; left: -20%; width: 140%; height: 140%;
+            background: radial-gradient(circle at 35% 35%, rgba(200, 0, 0, 0.18) 0%, transparent 50%),
+                        radial-gradient(circle at 65% 65%, rgba(160, 5, 5, 0.15) 0%, transparent 50%);
+            z-index: 1;
+            animation: clearZappingWave 20s ease-in-out infinite alternate;
+            filter: blur(16px); 
+            pointer-events: none;
+        }
+
+        @keyframes clearZappingWave {
+            0% { transform: translate(0, 0) scale(0.95) rotate(0deg); opacity: 0.3; }      
+            50% { transform: translate(-4%, 3%) scale(1.1) rotate(1deg); opacity: 1.0; }    
+            100% { transform: translate(3%, -4%) scale(0.9) rotate(-1deg); opacity: 0.4; }   
         }
 
         /* -----------------------------------------
@@ -34,105 +55,81 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background-color: #e6e2da; 
             display: flex;
-            flex-direction: column; 
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            padding: 2rem;
+            z-index: 10;
         }
 
-        /* 漆喰壁のマットな微細ノイズテクスチャ */
-        .matrix-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 0),
-                radial-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 0);
-            background-size: 3px 3px, 4px 4px; 
-            background-position: 0 0, 1px 1px;
-            opacity: 0.9;
-            z-index: 2; 
-            mix-blend-mode: multiply; 
-            pointer-events: none;
-        }
-
-        /* 漆喰壁の奥で、光と影がダイナミックに移ろう陰翳レイヤー */
-        .color-stream {
-            position: absolute;
-            top: 0; left: 0; width: 200%; height: 100%;
-            background: linear-gradient(to left, 
-                rgba(206, 198, 183, 0.7), 
-                rgba(185, 195, 178, 0.5), 
-                rgba(245, 242, 235, 0.9), 
-                rgba(170, 176, 180, 0.6), 
-                rgba(206, 198, 183, 0.7)  
-            );
-            background-size: 50% 100%;
-            z-index: 1;
-            animation: streamMoveRightToLeft 16s ease-in-out infinite; 
-        }
-
-        @keyframes streamMoveRightToLeft {
-            0% { transform: translateX(0%); }
-            50% { transform: translateX(-25%); } 
-            100% { transform: translateX(-50%); } 
-        }
-
-        /* タイトルエリア */
-        .title-container {
+        /* トップに配置するメイン画像 */
+        .hero-photo-wrapper {
             position: relative;
-            z-index: 3; 
+            z-index: 5;
+            width: 100%;
+            max-width: 480px; 
+            aspect-ratio: 2 / 3; 
+            overflow: hidden;
+            border: 1px solid #1c1313; 
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        }
+
+        .hero-photo-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(105%) brightness(95%);
+        }
+
+        /* タイトルエリア（写真の上に重ねる） */
+        .title-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; 
             text-align: center;
+            width: 100%;
+            pointer-events: none; 
         }
 
-        /* 【修正】サイズを極小（2.0rem）にし、余白（0.8em）をさらに広げた「SAISAKI」 */
+        /* 【色変更】朱赤から、品格のある白に近いグレー（#e6e2dc）へ昇華 */
         .cover-title {
-            font-family: "Klee One", serif; 
-            font-size: 2.0rem;  /* 3.8remからさらに半分近くまで削ぎ落とし */
-            font-weight: 600;   
-            letter-spacing: 0.8em; /* 文字の存在感を際立たせる贅沢な余白 */
-            text-indent: 0.8em;
+            font-family: "Pirata One", serif; 
+            font-size: 2.8rem;  
+            font-weight: normal;   
+            letter-spacing: 0.3em; 
+            text-indent: 0.3em;
             user-select: none;
-            display: inline-block;
-            color: #9c9687; 
+            color: #e6e2dc; /* 白土や印画紙のハイライトを思わせる冷たいグレー */
             
-            text-shadow: 1px 1px 2px rgba(242, 240, 235, 0.6);
+            /* 文字が鋭く、かつ重厚に浮き上がるための立体シャドウ */
+            text-shadow: 
+                2px 2px 0px rgba(0, 0, 0, 1),
+                4px 4px 0px rgba(0, 0, 0, 0.8),
+                0px 0px 10px rgba(0, 0, 0, 0.9);
+            
+            animation: titleBreathing 6s ease-in-out infinite;
         }
 
-        /* 移ろう光のように、左から右へゆっくりと影が晴れる仕掛け */
-        .cover-title span {
-            display: inline-block;
-            animation: waveLightShadow 5s infinite ease-in-out;
+        @keyframes titleBreathing {
+            0%, 100% { opacity: 0.85; filter: contrast(100%); }
+            50% { opacity: 1; filter: contrast(115%); }
         }
 
-        .cover-title span:nth-child(1) { animation-delay: 0.0s; } 
-        .cover-title span:nth-child(2) { animation-delay: 0.2s; } 
-        .cover-title span:nth-child(3) { animation-delay: 0.4s; } 
-        .cover-title span:nth-child(4) { animation-delay: 0.6s; } 
-        .cover-title span:nth-child(5) { animation-delay: 0.8s; } 
-        .cover-title span:nth-child(6) { animation-delay: 1.0s; } 
-        .cover-title span:nth-child(7) { animation-delay: 1.2s; } 
-
-        @keyframes waveLightShadow {
-            0%, 60%, 100% {
-                color: #9c9687; 
-            }
-            25% {
-                color: #2e2d2a; 
-            }
-        }
-
-        /* 洗練されたスクロールヒント */
+        /* 【色変更】矢印も白に近いグレー（#e6e2dc）に統一 */
         .scroll-hint {
             position: absolute;
-            bottom: 4rem;
+            bottom: 3rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 3;
+            z-index: 10;
             font-size: 1.2rem;
-            color: #7a7467; 
+            color: #e6e2dc; 
             user-select: none;
+            cursor: pointer;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8));
             animation: bounce 2.5s infinite ease-in-out;
         }
 
@@ -143,12 +140,14 @@
         }
 
         /* -----------------------------------------
-         * 2. WORK（ギャラリーページ）
+         * 2. WORK（漆黒のギャラリー）
          * ----------------------------------------- */
         .work-page {
             max-width: 1200px;
             margin: 0 auto;
             padding: 12rem 2rem; 
+            position: relative;
+            z-index: 20;
         }
 
         .photo-matrix {
@@ -158,30 +157,30 @@
         }
 
         .matrix-item {
-            background-color: #e8e5de; 
+            background-color: #0d0d0d; 
             aspect-ratio: 1 / 1; 
             overflow: hidden;
-            border: 1px solid #e3ded5;
+            border: 1px solid #1c1313; 
             cursor: pointer;
-            transition: border-color 0.6s;
-        }
-
-        .matrix-item:hover {
-            border-color: #8c867a;
+            transition: border-color 0.6s, box-shadow 0.6s;
         }
 
         .matrix-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(40%) contrast(95%) brightness(98%);
+            filter: grayscale(70%) contrast(120%) brightness(75%);
             transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         @media (hover: hover) {
+            .matrix-item:hover {
+                border-color: #b80000;
+                box-shadow: 0 0 30px rgba(184, 0, 0, 0.15);
+            }
             .matrix-item:hover img {
-                filter: grayscale(0%) contrast(100%) brightness(100%);
-                transform: scale(1.02); 
+                filter: grayscale(10%) contrast(105%) brightness(100%);
+                transform: scale(1.03); 
             }
         }
 
@@ -192,14 +191,14 @@
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background-color: rgba(10, 10, 10, 0.98); 
+            background-color: rgba(0, 0, 0, 0.99); 
             z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
             padding: 1rem; 
         }
 
@@ -212,19 +211,14 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain; 
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
-            transform: scale(0.97);
-            transition: transform 0.5s ease;
-        }
-
-        .fullscreen-overlay.active .fullscreen-img {
-            transform: scale(1);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            border: 1px solid #1a1a1a;
         }
 
         .close-btn {
             position: absolute;
             top: 1.5rem; right: 1.5rem;
-            color: #666;
+            color: #555;
             font-size: 2.5rem; 
             cursor: pointer;
             transition: color 0.3s;
@@ -232,55 +226,56 @@
             z-index: 1001;
         }
         .close-btn:hover {
-            color: #ddd;
+            color: #b80000;
         }
 
         /* -----------------------------------------
          * 4. フッター
          * ----------------------------------------- */
         footer {
-            padding: 7rem 2rem;
+            padding: 8rem 2rem;
             text-align: center;
-            border-top: 1px solid #e3ded5;
+            border-top: 1px solid #1c1313;
+            background-color: #0b0707;
         }
 
         .footer-instagram {
             display: inline-block;
             margin-bottom: 2rem;
-            color: #7a756c;
+            color: #66625a;
             text-decoration: none;
             font-size: 0.9rem;
             letter-spacing: 0.2em;
-            transition: color 0.3s, border-color 0.3s;
+            transition: color 0.3s;
             border-bottom: 1px solid transparent;
             padding-bottom: 4px;
         }
 
         .footer-instagram:hover {
-            color: #2e2d2a;
-            border-bottom-color: #2e2d2a;
+            color: #b80000;
+            border-bottom-color: #b80000;
         }
 
         .footer-copyright {
             font-size: 0.8rem;
             letter-spacing: 0.15em;
-            color: #a6a092;
+            color: #3d3636;
         }
 
         /* -----------------------------------------
          * 5. スマートフォン向けレスポンシブ調整
          * ----------------------------------------- */
         @media (max-width: 768px) {
-            .cover-title {
-                font-size: 1.4rem; /* スマホでも品を保つ極小サイズ */
-                letter-spacing: 0.4em;
-                text-indent: 0.4em;
+            .hero-photo-wrapper {
+                max-width: 85vw;
             }
-            
+            .cover-title {
+                font-size: 2.0rem; 
+                letter-spacing: 0.2em;
+            }
             .work-page {
                 padding: 8rem 1.5rem; 
             }
-            
             .photo-matrix {
                 gap: 2.5rem; 
             }
@@ -290,19 +285,20 @@
 <body>
 
     <section class="cover-page">
-        <div class="matrix-bg"></div>
         <div class="color-stream"></div>
         
+        <div class="hero-photo-wrapper">
+            <img src="_EPS3001.jpg" alt="Cover Photo">
+        </div>
+
         <div class="title-container">
-            <h1 class="cover-title">
-                <span>S</span><span>A</span><span>I</span><span>S</span><span>A</span><span>K</span><span>I</span>
-            </h1>
+            <h1 class="cover-title">Saisaki</h1>
         </div>
         
-        <div class="scroll-hint">▼</div>
+        <div class="scroll-hint" id="galleryBtn">▼</div>
     </section>
 
-    <main class="work-page">
+    <main class="work-page" id="gallerySection">
         <div class="photo-matrix" id="photoMatrix"></div>
     </main>
 
@@ -319,16 +315,12 @@
     </footer>
 
     <script>
-        // ==========================================
-        // 設定：あなたの写真の設定
-        // ==========================================
-        const TOTAL_PHOTOS = 18;         
+        // 設定：写真を27枚に設定
+        const TOTAL_PHOTOS = 27;         
         const IMAGE_PREFIX = "photo";    
         const IMAGE_EXT = ".jpg";        
 
-        // ==========================================
         // 写真マトリクスの自動生成
-        // ==========================================
         const matrixContainer = document.getElementById('photoMatrix');
 
         for (let i = 1; i <= TOTAL_PHOTOS; i++) {
@@ -344,9 +336,18 @@
             matrixContainer.appendChild(item);
         }
 
-        // ==========================================
+        // ▼ ボタンのスクロール処理
+        const galleryBtn = document.getElementById('galleryBtn');
+        const gallerySection = document.getElementById('gallerySection');
+
+        galleryBtn.addEventListener('click', () => {
+            gallerySection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start'      
+            });
+        });
+
         // 全画面表示（モーダル）の制御
-        // ==========================================
         const overlay = document.getElementById('fullscreenOverlay');
         const fullscreenImg = document.getElementById('fullscreenImg');
         const closeBtn = document.getElementById('closeBtn');
