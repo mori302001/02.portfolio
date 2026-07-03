@@ -30,22 +30,32 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 背景の奥底で怪しく蠢く薄い朱赤のエフェクト */
+        /* 【修正】明滅の速度を3倍（6秒周期）にスピードアップ */
         .color-stream {
             position: absolute;
-            top: -20%; left: -20%; width: 140%; height: 140%;
-            background: radial-gradient(circle at 35% 35%, rgba(200, 0, 0, 0.18) 0%, transparent 50%),
-                        radial-gradient(circle at 65% 65%, rgba(160, 5, 5, 0.15) 0%, transparent 50%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 35% 40%, rgba(220, 0, 0, 0.25) 0%, transparent 45vmax),
+                        radial-gradient(circle at 65% 60%, rgba(180, 5, 5, 0.22) 0%, transparent 45vmax);
             z-index: 1;
-            animation: clearZappingWave 20s ease-in-out infinite alternate;
-            filter: blur(16px); 
+            /* 18s から 6s に変更し、脈動するような速度感に */
+            animation: clearZappingWave 6s ease-in-out infinite alternate;
+            filter: blur(12px); 
             pointer-events: none;
         }
 
         @keyframes clearZappingWave {
-            0% { transform: translate(0, 0) scale(0.95) rotate(0deg); opacity: 0.3; }      
-            50% { transform: translate(-4%, 3%) scale(1.1) rotate(1deg); opacity: 1.0; }    
-            100% { transform: translate(3%, -4%) scale(0.9) rotate(-1deg); opacity: 0.4; }   
+            0% { 
+                transform: scale(0.85) rotate(0deg); 
+                opacity: 0.15; 
+            }      
+            50% { 
+                transform: scale(1.15) translate(-2%, 2%) rotate(2deg); 
+                opacity: 1.0;  
+            }    
+            100% { 
+                transform: scale(0.9) translate(2%, -2%) rotate(-1deg); 
+                opacity: 0.25; 
+            }   
         }
 
         /* -----------------------------------------
@@ -94,7 +104,7 @@
             pointer-events: none; 
         }
 
-        /* 【色変更】朱赤から、品格のある白に近いグレー（#e6e2dc）へ昇華 */
+        /* 品格のある白に近いグレー（#e6e2dc）のSaisakiロゴ */
         .cover-title {
             font-family: "Pirata One", serif; 
             font-size: 2.8rem;  
@@ -102,7 +112,7 @@
             letter-spacing: 0.3em; 
             text-indent: 0.3em;
             user-select: none;
-            color: #e6e2dc; /* 白土や印画紙のハイライトを思わせる冷たいグレー */
+            color: #e6e2dc; 
             
             /* 文字が鋭く、かつ重厚に浮き上がるための立体シャドウ */
             text-shadow: 
@@ -118,7 +128,7 @@
             50% { opacity: 1; filter: contrast(115%); }
         }
 
-        /* 【色変更】矢印も白に近いグレー（#e6e2dc）に統一 */
+        /* グレーに統一されたスクロールサイン */
         .scroll-hint {
             position: absolute;
             bottom: 3rem;
@@ -315,7 +325,7 @@
     </footer>
 
     <script>
-        // 設定：写真を27枚に設定
+        // 設定：写真は27枚に設定
         const TOTAL_PHOTOS = 27;         
         const IMAGE_PREFIX = "photo";    
         const IMAGE_EXT = ".jpg";        
