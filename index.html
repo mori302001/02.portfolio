@@ -204,7 +204,7 @@
             object-fit: cover;
             filter: grayscale(70%) contrast(120%) brightness(75%);
             
-            /* 極限強化版フリッカー（cinemaFlickerExtreme）を適用 */
+            /* 極限版フリッカーを適用 */
             animation: photoDistort 16s ease-in-out infinite alternate, cinemaFlickerExtreme 0.1s infinite;
         }
 
@@ -222,17 +222,17 @@
         /* 明るさの落差を40%まで拡大し、一瞬ほぼ闇に落ちるようなパチパチとした激しい点滅 */
         @keyframes cinemaFlickerExtreme {
             0%, 100% { filter: grayscale(inherit) contrast(inherit) brightness(100%); }
-            10% { filter: grayscale(inherit) contrast(inherit) brightness(60%); }  /* 一瞬、急激に暗くなる */
-            20% { filter: grayscale(inherit) contrast(inherit) brightness(105%); } /* 電圧の跳ね返り */
+            10% { filter: grayscale(inherit) contrast(inherit) brightness(60%); }  
+            20% { filter: grayscale(inherit) contrast(inherit) brightness(105%); } 
             35% { filter: grayscale(inherit) contrast(inherit) brightness(70%); }
-            50% { filter: grayscale(inherit) contrast(inherit) brightness(110%); } /* 閃光のように明るくなる */
+            50% { filter: grayscale(inherit) contrast(inherit) brightness(110%); } 
             65% { filter: grayscale(inherit) contrast(inherit) brightness(65%); }
             80% { filter: grayscale(inherit) contrast(inherit) brightness(95%); }
-            90% { filter: grayscale(inherit) contrast(inherit) brightness(55%); }  /* 深い影 */
+            90% { filter: grayscale(inherit) contrast(inherit) brightness(55%); }  
         }
 
         @media (hover: hover) {
-            /* ホバーしたときは鑑賞のためにゆらぎも、この激しいフリッカーもピタッと静止してクリアに */
+            /* ホバーしたときは、この激しいフリッカーもピタッと静止してクリアに */
             .matrix-item:hover {
                 transform: scale(1.03) !important; 
                 animation-play-state: paused;
