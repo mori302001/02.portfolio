@@ -23,7 +23,6 @@
         }
 
         body {
-            /* ベースをわずかに赤みを帯びた映画館の闇に設定 */
             background-color: #0b0707; 
             color: #a6a092;            
             font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
@@ -31,14 +30,22 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 【抜本的修正】グラデーションを反転：内を「漆黒」に、外を「蠢く朱赤」へ */
+        /* 【DL防止】長押しメニューやドラッグをCSSで禁止 */
+        img {
+            -webkit-touch-callout: none; 
+            -webkit-user-select: none;   
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;           
+            -webkit-user-drag: none;     
+            user-drag: none;
+        }
+
+        /* 背景の奥底で怪しく蠢く朱赤のエフェクト */
         .color-stream {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* * 中心（10%）を完全な黒（#000000）にし、
-             * そこから外側（45vmax以降）へ向かって、
-             * 生々しく深い朱赤（#bd0000）が染み出していくような構造に変更 
-             */
             background: radial-gradient(circle at 50% 50%, 
                 #000000 10%, 
                 rgba(189, 0, 0, 0.22) 45vmax, 
@@ -46,29 +53,19 @@
                 #000000 100%
             );
             z-index: 1;
-            /* 蠢く速度感（6s周期）はそのまま維持 */
             animation: delicateZappingWave 6s ease-in-out infinite alternate;
             filter: blur(12px); 
             pointer-events: none;
         }
 
         @keyframes delicateZappingWave {
-            0% { 
-                transform: scale(0.95) rotate(0deg); 
-                opacity: 0.2; /* 闇が圧し掛かる瞬間 */
-            }      
-            50% { 
-                transform: scale(1.1) translate(-2%, 2%) rotate(2deg); 
-                opacity: 1.0;  /* 中心を黒に保ったまま、外側の赤がじわっと染み出す瞬間 */
-            }    
-            100% { 
-                transform: scale(0.9) translate(2%, -2%) rotate(-1deg); 
-                opacity: 0.3; 
-            }   
+            0% { transform: scale(0.95) rotate(0deg); opacity: 0.2; }      
+            50% { transform: scale(1.1) translate(-2%, 2%) rotate(2deg); opacity: 1.0; }    
+            100% { transform: scale(0.9) translate(2%, -2%) rotate(-1deg); opacity: 0.3; }   
         }
 
         /* -----------------------------------------
-         * 1. 表紙（COVER PAGE：中心に写真を配置）
+         * 1. 表紙（COVER PAGE）
          * ----------------------------------------- */
         .cover-page {
             position: relative;
@@ -82,7 +79,7 @@
             z-index: 10;
         }
 
-        /* トップに配置するメイン画像 */
+        /* 表紙のメイン画像 */
         .hero-photo-wrapper {
             position: relative;
             z-index: 5;
@@ -90,9 +87,10 @@
             max-width: 480px; 
             aspect-ratio: 2 / 3; 
             overflow: hidden;
-            /* 写真の周囲を闇（漆黒）で溶け込ませる */
-            border: 1px solid #141111;
+            border: 1px solid #141111; 
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            /* 表紙の写真のフリッカー周期を0.08秒に高速化 */
+            animation: cinemaFlickerExtreme 0.08s infinite;
         }
 
         .hero-photo-wrapper img {
@@ -122,9 +120,8 @@
             letter-spacing: 0.3em; 
             text-indent: 0.3em;
             user-select: none;
-            color: #e6e2dc; /* 白土や印画紙のハイライトを思わせる冷たいグレー */
+            color: #e6e2dc; 
             
-            /* 文字が鋭く、かつ重厚に浮き上がるための立体シャドウ */
             text-shadow: 
                 2px 2px 0px rgba(0, 0, 0, 1),
                 4px 4px 0px rgba(0, 0, 0, 0.8),
@@ -176,32 +173,75 @@
             gap: 4.5rem; 
         }
 
+        /* 額縁（フレーム全体）が超低速でゆらゆらと揺れる設定 */
         .matrix-item {
-            background-color: #0d0d0d; 
+            background-color: #e6e2dc; 
             aspect-ratio: 1 / 1; 
             overflow: hidden;
-            border: 1px solid #1c1313; 
+            border: 16px solid #e6e2dc; 
+            box-shadow: 8px 8px 30px rgba(0,0,0,0.5);
             cursor: pointer;
-            transition: border-color 0.6s, box-shadow 0.6s;
+            position: relative;
+            animation: frameFloat 12s ease-in-out infinite alternate;
         }
 
+        /* 27枚を非同期にする設定 */
+        .matrix-item:nth-child(2n)  { animation-duration: 14s; animation-delay: -2s; }
+        .matrix-item:nth-child(3n)  { animation-duration: 16s; animation-delay: -5s; }
+        .matrix-item:nth-child(5n)  { animation-duration: 11s; animation-delay: -3s; }
+        .matrix-item:nth-child(7n)  { animation-duration: 15s; animation-delay: -7s; }
+
+        @keyframes frameFloat {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-2px, 3px) rotate(0.3deg); }
+            100% { transform: translate(3px, -2px) rotate(-0.2deg); }
+        }
+
+        /* 中の写真に対するアニメーション（歪み ＆ 超高速フリッカー） */
         .matrix-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             filter: grayscale(70%) contrast(120%) brightness(75%);
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            
+            /* 極限強化版フリッカー（cinemaFlickerExtreme）を適用 */
+            animation: photoDistort 16s ease-in-out infinite alternate, cinemaFlickerExtreme 0.1s infinite;
+        }
+
+        /* 写真の歪み・フリッカーの不規則化 */
+        .matrix-item:nth-child(3n) img { animation-duration: 19s, 0.09s; }
+        .matrix-item:nth-child(4n) img { animation-duration: 13s, 0.11s; }
+
+        /* 中の写真だけが液体の底でジワジワと歪む */
+        @keyframes photoDistort {
+            0% { transform: scale(1.02) skewX(0deg) skewY(0deg); }
+            50% { transform: scale(1.05) skewX(0.4deg) skewY(-0.2deg); }
+            100% { transform: scale(1.01) skewX(-0.3deg) skewY(0.3deg); }
+        }
+
+        /* 明るさの落差を40%まで拡大し、一瞬ほぼ闇に落ちるようなパチパチとした激しい点滅 */
+        @keyframes cinemaFlickerExtreme {
+            0%, 100% { filter: grayscale(inherit) contrast(inherit) brightness(100%); }
+            10% { filter: grayscale(inherit) contrast(inherit) brightness(60%); }  /* 一瞬、急激に暗くなる */
+            20% { filter: grayscale(inherit) contrast(inherit) brightness(105%); } /* 電圧の跳ね返り */
+            35% { filter: grayscale(inherit) contrast(inherit) brightness(70%); }
+            50% { filter: grayscale(inherit) contrast(inherit) brightness(110%); } /* 閃光のように明るくなる */
+            65% { filter: grayscale(inherit) contrast(inherit) brightness(65%); }
+            80% { filter: grayscale(inherit) contrast(inherit) brightness(95%); }
+            90% { filter: grayscale(inherit) contrast(inherit) brightness(55%); }  /* 深い影 */
         }
 
         @media (hover: hover) {
-            /* 写真にホバーしたときだけ、闇からソナチネの朱赤が滲み出る */
+            /* ホバーしたときは鑑賞のためにゆらぎも、この激しいフリッカーもピタッと静止してクリアに */
             .matrix-item:hover {
-                border-color: #bd0000;
-                box-shadow: 0 0 30px rgba(189, 0, 0, 0.25);
+                transform: scale(1.03) !important; 
+                animation-play-state: paused;
+                box-shadow: 0px 12px 40px rgba(189, 0, 0, 0.3);
+                z-index: 30; 
             }
             .matrix-item:hover img {
+                animation-play-state: paused; 
                 filter: grayscale(10%) contrast(105%) brightness(100%);
-                transform: scale(1.03); 
             }
         }
 
@@ -220,7 +260,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.4s ease;
-            padding: 1rem; 
+            padding: 2rem; 
         }
 
         .fullscreen-overlay.active {
@@ -228,12 +268,14 @@
             pointer-events: auto;
         }
 
+        /* 拡大表示時は作品鑑賞のため、フリッカーや揺らぎは一切適用しません */
         .fullscreen-img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain; 
+            background-color: #e6e2dc;
+            border: 24px solid #e6e2dc; 
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
-            border: 1px solid #1a1a1a;
         }
 
         .close-btn {
@@ -289,6 +331,14 @@
         @media (max-width: 768px) {
             .hero-photo-wrapper {
                 max-width: 85vw;
+                border: none; 
+            }
+            .matrix-item {
+                border: 10px solid #e6e2dc; 
+                animation: frameFloatMobile 10s ease-in-out infinite alternate;
+            }
+            .fullscreen-img {
+                border: 14px solid #e6e2dc;
             }
             .cover-title {
                 font-size: 2.0rem; 
@@ -300,6 +350,11 @@
             .photo-matrix {
                 gap: 2.5rem; 
             }
+        }
+
+        @keyframes frameFloatMobile {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-1px, 2px); }
         }
     </style>
 </head>
@@ -348,10 +403,18 @@
             const item = document.createElement('div');
             item.className = 'matrix-item';
 
+            // 各要素のランダムなディレイ設定
+            const randomDelay = (Math.random() * -10).toFixed(2);
+            item.style.animationDelay = `${randomDelay}s`;
+
             const img = document.createElement('img');
             img.src = `${IMAGE_PREFIX}${i}${IMAGE_EXT}`; 
             img.alt = `Work ${i}`;
             img.loading = 'lazy'; 
+
+            // 中の写真のディレイ設定
+            const randomImgDelay = (Math.random() * -15).toFixed(2);
+            img.style.animationDelay = `${randomImgDelay}s, ${randomImgDelay}s`;
 
             item.appendChild(img);
             matrixContainer.appendChild(item);
@@ -394,6 +457,21 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && overlay.classList.contains('active')) closeOverlay();
+        });
+
+        // JavaScriptによる右クリック・保存防止プロテクト
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG' || e.target.closest('.matrix-item') || e.target.id === 'fullscreenImg') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
         });
     </script>
 
