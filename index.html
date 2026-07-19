@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saisaki</title>
     
+    <!-- タブのファビコン：真っ赤な小さな丸 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23bd0000'/></svg>" type="image/svg+xml">
 
+    <!-- 視認性とソナチネの緊張感を両立した「Pirata One」の読み込み -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <!-- ギャラリー部分の細い明朝体（クレー One） -->
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400&display=swap" rel="stylesheet">
 
     <style>
@@ -89,7 +92,6 @@
             overflow: hidden;
             border: 1px solid #141111; 
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
-            /* 表紙の写真のフリッカー周期を0.08秒に高速化 */
             animation: cinemaFlickerExtreme 0.08s infinite;
         }
 
@@ -98,9 +100,10 @@
             height: 100%;
             object-fit: cover;
             filter: contrast(105%) brightness(95%);
+            transition: filter 0.5s ease; 
         }
 
-        /* タイトルエリア（写真の中心に重ねる） */
+        /* タイトルエリア */
         .title-container {
             position: absolute;
             top: 50%;
@@ -112,7 +115,6 @@
             pointer-events: none; 
         }
 
-        /* 品格のある冷淡なグレーのSaisakiロゴ */
         .cover-title {
             font-family: "Pirata One", serif; 
             font-size: 2.8rem;  
@@ -121,12 +123,10 @@
             text-indent: 0.3em;
             user-select: none;
             color: #e6e2dc; 
-            
             text-shadow: 
                 2px 2px 0px rgba(0, 0, 0, 1),
                 4px 4px 0px rgba(0, 0, 0, 0.8),
                 0px 0px 10px rgba(0, 0, 0, 0.9);
-            
             animation: titleBreathing 6s ease-in-out infinite;
         }
 
@@ -135,7 +135,7 @@
             50% { opacity: 1; filter: contrast(115%); }
         }
 
-        /* グレーに統一されたスクロールサイン ▼ */
+        /* スクロールサイン ▼ */
         .scroll-hint {
             position: absolute;
             bottom: 3rem;
@@ -162,7 +162,7 @@
         .work-page {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 12rem 2rem; 
+            padding: 12rem 2rem 4rem 2rem; 
             position: relative;
             z-index: 20;
         }
@@ -173,7 +173,7 @@
             gap: 4.5rem; 
         }
 
-        /* 額縁（フレーム全体）が超低速でゆらゆらと揺れる設定 */
+        /* 額縁（フレーム全体） */
         .matrix-item {
             background-color: #e6e2dc; 
             aspect-ratio: 1 / 1; 
@@ -185,7 +185,7 @@
             animation: frameFloat 12s ease-in-out infinite alternate;
         }
 
-        /* 27枚を非同期にする設定 */
+        /* 27枚非同期設定 */
         .matrix-item:nth-child(2n)  { animation-duration: 14s; animation-delay: -2s; }
         .matrix-item:nth-child(3n)  { animation-duration: 16s; animation-delay: -5s; }
         .matrix-item:nth-child(5n)  { animation-duration: 11s; animation-delay: -3s; }
@@ -197,29 +197,25 @@
             100% { transform: translate(3px, -2px) rotate(-0.2deg); }
         }
 
-        /* 中の写真に対するアニメーション（歪み ＆ 超高速フリッカー） */
+        /* デフォルト：いつもの煤けたオリジナル状態 */
         .matrix-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             filter: grayscale(70%) contrast(120%) brightness(75%);
-            
-            /* 極限版フリッカーを適用 */
             animation: photoDistort 16s ease-in-out infinite alternate, cinemaFlickerExtreme 0.1s infinite;
+            transition: filter 0.5s ease; 
         }
 
-        /* 写真の歪み・フリッカーの不規則化 */
         .matrix-item:nth-child(3n) img { animation-duration: 19s, 0.09s; }
         .matrix-item:nth-child(4n) img { animation-duration: 13s, 0.11s; }
 
-        /* 中の写真だけが液体の底でジワジワと歪む */
         @keyframes photoDistort {
             0% { transform: scale(1.02) skewX(0deg) skewY(0deg); }
             50% { transform: scale(1.05) skewX(0.4deg) skewY(-0.2deg); }
             100% { transform: scale(1.01) skewX(-0.3deg) skewY(0.3deg); }
         }
 
-        /* 明るさの落差を40%まで拡大し、一瞬ほぼ闇に落ちるようなパチパチとした激しい点滅 */
         @keyframes cinemaFlickerExtreme {
             0%, 100% { filter: grayscale(inherit) contrast(inherit) brightness(100%); }
             10% { filter: grayscale(inherit) contrast(inherit) brightness(60%); }  
@@ -231,22 +227,66 @@
             90% { filter: grayscale(inherit) contrast(inherit) brightness(55%); }  
         }
 
+        /* -----------------------------------------
+         * モノクロモード（ボタンが押されたときの階調縛り）
+         * ----------------------------------------- */
+        body.mode-monochrome .matrix-item img,
+        body.mode-monochrome .hero-photo-wrapper img {
+            filter: grayscale(100%) contrast(125%) brightness(70%);
+        }
+
+        /* ホバー時の静止処理（モードに応じた質感でピタッと止まる） */
         @media (hover: hover) {
-            /* ホバーしたときは、この激しいフリッカーもピタッと静止してクリアに */
             .matrix-item:hover {
                 transform: scale(1.03) !important; 
                 animation-play-state: paused;
                 box-shadow: 0px 12px 40px rgba(189, 0, 0, 0.3);
                 z-index: 30; 
             }
+            /* 通常オリジナルのホバー：少し色を残してクリアに */
             .matrix-item:hover img {
                 animation-play-state: paused; 
                 filter: grayscale(10%) contrast(105%) brightness(100%);
             }
+            /* モノクロモード時のホバー：完全な白黒階調としてクリアに */
+            body.mode-monochrome .matrix-item:hover img {
+                animation-play-state: paused; 
+                filter: grayscale(100%) contrast(120%) brightness(95%);
+            }
         }
 
         /* -----------------------------------------
-         * 3. 全画面表示（ライトボックスモーダル）
+         * 3. CONTROL SIGN（極ミニマルな切り替えボタン）
+         * ----------------------------------------- */
+        .toggle-container {
+            width: 100vw;
+            text-align: center;
+            padding: 4rem 2rem 8rem 2rem;
+            position: relative;
+            z-index: 20;
+        }
+
+        .dev-toggle-btn {
+            background: none;
+            border: none;
+            font-family: "Klee One", serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            color: #3d3636; /* 闇に溶けかける暗いグレー */
+            cursor: pointer;
+            user-select: none;
+            padding: 10px 20px;
+            transition: color 0.4s ease, text-shadow 0.4s ease;
+        }
+
+        .dev-toggle-btn:hover {
+            color: #e6e2dc;
+            text-shadow: 0 0 8px rgba(230, 226, 220, 0.6);
+        }
+
+        /* -----------------------------------------
+         * 4. 全画面表示（ライトボックスモーダル）
          * ----------------------------------------- */
         .fullscreen-overlay {
             position: fixed;
@@ -268,7 +308,6 @@
             pointer-events: auto;
         }
 
-        /* 拡大表示時は作品鑑賞のため、フリッカーや揺らぎは一切適用しません */
         .fullscreen-img {
             max-width: 100%;
             max-height: 100%;
@@ -276,6 +315,12 @@
             background-color: #e6e2dc;
             border: 24px solid #e6e2dc; 
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            transition: filter 0.4s ease; 
+        }
+
+        /* モーダル拡大表示時のモノクロ連動 */
+        body.mode-monochrome .fullscreen-img {
+            filter: grayscale(100%) contrast(115%) brightness(100%);
         }
 
         .close-btn {
@@ -293,7 +338,7 @@
         }
 
         /* -----------------------------------------
-         * 4. フッター
+         * 5. フッター
          * ----------------------------------------- */
         footer {
             padding: 8rem 2rem;
@@ -326,7 +371,7 @@
         }
 
         /* -----------------------------------------
-         * 5. スマートフォン向けレスポンシブ調整
+         * 6. スマートフォン向けレスポンシブ調整
          * ----------------------------------------- */
         @media (max-width: 768px) {
             .hero-photo-wrapper {
@@ -345,7 +390,10 @@
                 letter-spacing: 0.2em;
             }
             .work-page {
-                padding: 8rem 1.5rem; 
+                padding: 8rem 1.5rem 2rem 1.5rem; 
+            }
+            .toggle-container {
+                padding: 2rem 2rem 6rem 2rem;
             }
             .photo-matrix {
                 gap: 2.5rem; 
@@ -360,8 +408,10 @@
 </head>
 <body>
 
+    <!-- 背景の奥底で怪しく蠢く朱赤のエフェクト -->
     <div class="color-stream"></div>
 
+    <!-- 1. 表紙（COVER PAGE） -->
     <section class="cover-page">
         <div class="hero-photo-wrapper">
             <img src="_EPS3001.jpg" alt="Cover Photo">
@@ -374,15 +424,23 @@
         <div class="scroll-hint" id="galleryBtn">▼</div>
     </section>
 
+    <!-- 2. WORK（GALLERY MATRIX：27枚） -->
     <main class="work-page" id="gallerySection">
         <div class="photo-matrix" id="photoMatrix"></div>
     </main>
 
+    <!-- 3. CONTROL SIGN（修正：極ミニマルな2状態トグルボタン） -->
+    <section class="toggle-container">
+        <button class="dev-toggle-btn" id="devToggleBtn">MONOCHROME</button>
+    </section>
+
+    <!-- 4. 全画面表示用オーバーレイ -->
     <div class="fullscreen-overlay" id="fullscreenOverlay">
         <span class="close-btn" id="closeBtn">&times;</span>
         <img src="" alt="Fullscreen" class="fullscreen-img" id="fullscreenImg">
     </div>
 
+    <!-- 5. フッター -->
     <footer>
         <a href="https://www.instagram.com/anko.pho" target="_blank" rel="noopener noreferrer" class="footer-instagram">
             Instagram
@@ -390,6 +448,9 @@
         <p class="footer-copyright">&copy; 2026 saisaki. All rights reserved.</p>
     </footer>
 
+    <!-- -----------------------------------------
+     * JavaScript: 動的画像生成 & シンプル2トグル制御
+     * ----------------------------------------- -->
     <script>
         // 設定：写真は27枚に設定
         const TOTAL_PHOTOS = 27;         
@@ -457,6 +518,23 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && overlay.classList.contains('active')) closeOverlay();
+        });
+
+        // ==========================================
+        // 【修正】シンプルに2つの単語が行き来するトグルロジック
+        // ==========================================
+        const devToggleBtn = document.getElementById('devToggleBtn');
+
+        devToggleBtn.addEventListener('click', () => {
+            // bodyのクラスをトグル（ON/OFF切り替え）
+            const isMono = document.body.classList.toggle('mode-monochrome');
+            
+            // クラスの状態に応じて、次に切り替わるための単語を提示
+            if (isMono) {
+                devToggleBtn.textContent = 'ORIGINAL';
+            } else {
+                devToggleBtn.textContent = 'MONOCHROME';
+            }
         });
 
         // JavaScriptによる右クリック・保存防止プロテクト
