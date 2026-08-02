@@ -67,6 +67,27 @@
             100% { transform: scale(0.9) translate(2%, -2%) rotate(-1deg); opacity: 0.3; }   
         }
 
+        /* 右上：ABOUTへのナビリンク */
+        .nav-link {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
+            font-family: "Klee One", serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            color: #66625a;
+            text-decoration: none;
+            padding: 8px 12px;
+            transition: color 0.4s ease, text-shadow 0.4s ease;
+        }
+
+        .nav-link:hover {
+            color: #e6e2dc;
+            text-shadow: 0 0 8px rgba(230, 226, 220, 0.6);
+        }
+
         /* -----------------------------------------
          * 1. 表紙（COVER PAGE）
          * ----------------------------------------- */
@@ -410,6 +431,8 @@
 
     <!-- 背景の奥底で怪しく蠢く朱赤のエフェクト -->
     <div class="color-stream"></div>
+
+    <a href="about.html" class="nav-link">ABOUT</a>
 
     <!-- 1. 表紙（COVER PAGE） -->
     <section class="cover-page">

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Saisaki</title>
+
+    <!-- タブのファビコン：真っ赤な小さな丸（index.html と共通） -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23bd0000'/></svg>" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0707;
+            color: #a6a092;
+            font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* 背景の奥底で怪しく蠢く朱赤のエフェクト（index.html と共通） */
+        .color-stream {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%,
+                #000000 10%,
+                rgba(189, 0, 0, 0.22) 45vmax,
+                rgba(189, 0, 0, 0.28) 60vmax,
+                #000000 100%
+            );
+            z-index: 1;
+            animation: delicateZappingWave 6s ease-in-out infinite alternate;
+            filter: blur(12px);
+            pointer-events: none;
+        }
+
+        @keyframes delicateZappingWave {
+            0% { transform: scale(0.95) rotate(0deg); opacity: 0.2; }
+            50% { transform: scale(1.1) translate(-2%, 2%) rotate(2deg); opacity: 1.0; }
+            100% { transform: scale(0.9) translate(2%, -2%) rotate(-1deg); opacity: 0.3; }
+        }
+
+        /* 右上：WORKへ戻るナビリンク */
+        .nav-link {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
+            font-family: "Klee One", serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            color: #66625a;
+            text-decoration: none;
+            padding: 8px 12px;
+            transition: color 0.4s ease, text-shadow 0.4s ease;
+        }
+
+        .nav-link:hover {
+            color: #e6e2dc;
+            text-shadow: 0 0 8px rgba(230, 226, 220, 0.6);
+        }
+
+        /* -----------------------------------------
+         * ABOUT本体（テキスト中心）
+         * ----------------------------------------- */
+        .about-page {
+            position: relative;
+            z-index: 20;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 10rem 2rem 6rem 2rem;
+        }
+
+        .page-title {
+            font-family: "Pirata One", serif;
+            font-size: 2.8rem;
+            font-weight: normal;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            color: #e6e2dc;
+            text-shadow:
+                2px 2px 0px rgba(0, 0, 0, 1),
+                4px 4px 0px rgba(0, 0, 0, 0.8),
+                0px 0px 10px rgba(0, 0, 0, 0.9);
+            animation: titleBreathing 6s ease-in-out infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes titleBreathing {
+            0%, 100% { opacity: 0.85; filter: contrast(100%); }
+            50% { opacity: 1; filter: contrast(115%); }
+        }
+
+        .page-subtitle {
+            font-size: 0.85rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            color: #66625a;
+            margin-bottom: 4rem;
+        }
+
+        .about-meta {
+            list-style: none;
+            margin-top: 4rem;
+            padding-top: 2.5rem;
+            border-top: 1px solid #1c1313;
+        }
+
+        .about-meta li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            padding: 0.6rem 0;
+            color: #66625a;
+        }
+
+        .about-meta li span:first-child {
+            color: #3d3636;
+            letter-spacing: 0.3em;
+        }
+
+        /* -----------------------------------------
+         * フッター（index.html と共通）
+         * ----------------------------------------- */
+        footer {
+            position: relative;
+            z-index: 20;
+            padding: 8rem 2rem;
+            text-align: center;
+            border-top: 1px solid #1c1313;
+            background-color: #0b0707;
+        }
+
+        .footer-instagram {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #66625a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            transition: color 0.3s;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 4px;
+        }
+
+        .footer-instagram:hover {
+            color: #bd0000;
+            border-bottom-color: #bd0000;
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            color: #3d3636;
+        }
+
+        @media (max-width: 768px) {
+            .about-page {
+                padding: 7rem 1.5rem 4rem 1.5rem;
+            }
+            .page-title {
+                font-size: 1.9rem;
+                letter-spacing: 0.2em;
+            }
+            .about-meta li {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="color-stream"></div>
+
+    <a href="index.html" class="nav-link">WORK</a>
+
+    <!--
+        PROFILE TEXT: ここに本文を追加してください。
+    -->
+    <section class="about-page">
+        <h1 class="page-title">Saisaki</h1>
+        <p class="page-subtitle">PHOTOGRAPHER</p>
+
+        <ul class="about-meta">
+            <li><span>BASED IN</span><span>Japan</span></li>
+            <li><span>SINCE</span><span>2005</span></li>
+            <li><span>CONTACT</span><span>Instagram DM</span></li>
+        </ul>
+    </section>
+
+    <footer>
+        <a href="https://www.instagram.com/anko.pho" target="_blank" rel="noopener noreferrer" class="footer-instagram">
+            Instagram
+        </a>
+        <p class="footer-copyright">&copy; 2026 saisaki. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
