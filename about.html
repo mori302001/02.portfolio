@@ -29,6 +29,18 @@
             min-height: 100vh;
         }
 
+        /* 【DL防止】長押しメニューやドラッグをCSSで禁止（index.html と共通） */
+        img {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+
         /* 背景の奥底で怪しく蠢く朱赤のエフェクト（index.html と共通） */
         .color-stream {
             position: fixed;
@@ -83,6 +95,19 @@
             padding: 10rem 2rem 6rem 2rem;
         }
 
+        /* 肖像写真：枠なし、原色のまま、写真本来の縦横比で表示 */
+        .about-portrait-wrapper {
+            width: 280px;
+            max-width: 70%;
+            margin-bottom: 3rem;
+        }
+
+        .about-portrait-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
         .page-title {
             font-family: "Pirata One", serif;
             font-size: 2.8rem;
@@ -108,13 +133,13 @@
             letter-spacing: 0.4em;
             text-indent: 0.4em;
             color: #66625a;
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
         }
 
         .about-meta {
             list-style: none;
-            margin-top: 4rem;
-            padding-top: 2.5rem;
+            margin-top: 1.5rem;
+            padding-top: 2rem;
             border-top: 1px solid #1c1313;
         }
 
@@ -179,6 +204,10 @@
                 flex-direction: column;
                 gap: 0.2rem;
             }
+            .about-portrait-wrapper {
+                width: 170px;
+                margin-bottom: 2.5rem;
+            }
         }
     </style>
 </head>
@@ -188,10 +217,11 @@
 
     <a href="index.html" class="nav-link">WORK</a>
 
-    <!--
-        PROFILE TEXT: ここに本文を追加してください。
-    -->
     <section class="about-page">
+        <div class="about-portrait-wrapper">
+            <img src="aboutpage.jpg" alt="Saisaki portrait">
+        </div>
+
         <h1 class="page-title">Saisaki</h1>
         <p class="page-subtitle">PHOTOGRAPHER</p>
 
