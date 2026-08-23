@@ -103,25 +103,138 @@
             z-index: 10;
         }
 
-        /* 表紙のメイン画像 */
-        .hero-photo-wrapper {
+        /* 表紙のメイン画像：斜め視点のブラウン管モニター（小型） */
+        .crt-stage {
             position: relative;
             z-index: 5;
             width: 100%;
-            max-width: 480px; 
-            aspect-ratio: 2 / 3; 
+            max-width: min(70vw, 260px);
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        /* 地面の影（奥行きの錯覚を支える） */
+        .crt-stage::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -6%;
+            width: 78%;
+            height: 14%;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, transparent 72%);
+            transform: translateX(-50%);
+            z-index: -1;
+        }
+
+        .crt-object {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            transform-style: preserve-3d;
+            transform: rotateX(12deg) rotateY(-26deg);
+            transition: transform 0.6s ease;
+            cursor: pointer;
+        }
+
+        .crt-object:hover {
+            transform: rotateX(10deg) rotateY(-22deg);
+        }
+
+        .crt-face {
+            position: absolute;
+            backface-visibility: hidden;
+        }
+
+        /* 正面：ベゼル＋画面 */
+        .crt-front {
+            inset: 0;
+            transform: translateZ(80px);
+            border-radius: 10px;
+            padding: 20px 20px 24px 20px;
+            background: linear-gradient(150deg, #322a27 0%, #16110f 55%, #070404 100%);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+                0 18px 40px rgba(0, 0, 0, 0.8),
+                0 0 50px rgba(189, 0, 0, 0.22);
+        }
+
+        /* 側面：奥に向かって窄まる、ブラウン管特有の厚み */
+        .crt-side {
+            top: 0;
+            right: -80px;
+            width: 80px;
+            height: 100%;
+            background: linear-gradient(90deg, #14100e 0%, #1c1613 55%, #0a0605 100%);
+            transform-origin: left center;
+            transform: rotateY(90deg);
+            clip-path: polygon(0% 0%, 100% 16%, 100% 84%, 0% 100%);
+        }
+
+        .crt-top {
+            left: 0;
+            top: -80px;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(0deg, #14100e 0%, #4a3f3a 55%, #2a2320 100%);
+            transform-origin: center bottom;
+            transform: rotateX(-90deg);
+            clip-path: polygon(0% 0%, 100% 0%, 84% 100%, 16% 100%);
+        }
+
+        /* ブラウン管の「画面」部分 */
+        .crt-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            border: 1px solid #141111; 
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            border-radius: 5px;
+            background: #000;
+            box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.9);
             animation: cinemaFlickerExtreme 0.08s infinite;
         }
 
-        .hero-photo-wrapper img {
+        .crt-screen img {
+            position: relative;
+            z-index: 1;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: contrast(105%) brightness(95%);
-            transition: filter 0.5s ease; 
+            filter: contrast(110%) brightness(96%) saturate(108%);
+            transition: filter 0.5s ease, opacity 0.6s ease;
+        }
+
+        /* 走査線 */
+        .crt-screen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.32) 0px,
+                rgba(0, 0, 0, 0.32) 1px,
+                transparent 2px,
+                transparent 3px
+            );
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ガラスの反射・フォスファーグロー・ビネット */
+        .crt-screen::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 24% 16%, rgba(255, 255, 255, 0.16), transparent 42%),
+                radial-gradient(ellipse at center, rgba(189, 60, 40, 0.12), transparent 60%),
+                radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.7) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        body.mode-monochrome .crt-screen img {
+            filter: grayscale(100%) contrast(130%);
         }
 
         /* タイトルエリア */
@@ -254,8 +367,7 @@
         /* -----------------------------------------
          * モノクロモード（ボタンが押されたときの階調縛り）
          * ----------------------------------------- */
-        body.mode-monochrome .matrix-item img,
-        body.mode-monochrome .hero-photo-wrapper img {
+        body.mode-monochrome .matrix-item img {
             filter: grayscale(100%) contrast(125%) brightness(70%);
         }
 
@@ -404,10 +516,6 @@
         }
 
         @media (max-width: 768px) {
-            .hero-photo-wrapper {
-                max-width: 85vw;
-                border: none;
-            }
             .matrix-item {
                 border: 10px solid #e6e2dc;
                 margin-bottom: 2.5rem;
@@ -447,8 +555,16 @@
 
     <!-- 1. 表紙（COVER PAGE） -->
     <section class="cover-page">
-        <div class="hero-photo-wrapper">
-            <img src="cover.jpg" alt="Cover Photo">
+        <div class="crt-stage">
+            <div class="crt-object" id="heroCrt">
+                <div class="crt-face crt-top"></div>
+                <div class="crt-face crt-side"></div>
+                <div class="crt-face crt-front">
+                    <div class="crt-screen">
+                        <img src="cover.jpg" alt="Cover Photo" id="heroPhoto">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="title-container">
@@ -538,6 +654,33 @@
                 document.body.style.overflow = 'hidden';
             }
         });
+
+        // ブラウン管モニター（表紙）クリックでも全画面表示
+        const heroCrt = document.getElementById('heroCrt');
+        const heroPhoto = document.getElementById('heroPhoto');
+
+        heroCrt.addEventListener('click', () => {
+            fullscreenImg.src = heroPhoto.src;
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // ブラウン管に映す写真を表紙とギャラリー写真で順繰りに切り替える
+        const heroImages = ['cover.jpg'];
+        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
+            heroImages.push(`${IMAGE_PREFIX}${i}${IMAGE_EXT}`);
+        }
+        let heroIndex = 0;
+        const HERO_ROTATE_MS = 4500;
+
+        setInterval(() => {
+            heroIndex = (heroIndex + 1) % heroImages.length;
+            heroPhoto.style.opacity = '0';
+            setTimeout(() => {
+                heroPhoto.src = heroImages[heroIndex];
+                heroPhoto.style.opacity = '1';
+            }, 550);
+        }, HERO_ROTATE_MS);
 
         const closeOverlay = () => {
             overlay.classList.remove('active');
