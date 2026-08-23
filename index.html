@@ -25,9 +25,13 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
-            background-color: #0b0707; 
-            color: #a6a092;            
+            background-color: #0b0707;
+            color: #a6a092;
             font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
@@ -105,7 +109,7 @@
 
         /* 表紙のメイン画像：ドラッグで回せる、線+光の立方体 */
         .crt-stage {
-            --cube-size: clamp(190px, 42vw, 280px);
+            --cube-size: clamp(230px, 70vw, 360px);
             position: relative;
             z-index: 5;
             margin: 0 auto;
@@ -611,6 +615,50 @@
         };
         applyCubeRotation();
 
+        // 各面の向き（ローカル座標での法線）
+        const CUBE_FACE_NORMALS = {
+            front:  [0, 0, 1],
+            back:   [0, 0, -1],
+            right:  [1, 0, 0],
+            left:   [-1, 0, 0],
+            top:    [0, -1, 0],
+            bottom: [0, 1, 0],
+        };
+        const cubeFaceImgs = {
+            front: heroPhoto,
+            back: document.querySelector('.crt-back img'),
+            right: document.querySelector('.crt-right img'),
+            left: document.querySelector('.crt-left img'),
+            top: document.querySelector('.crt-top img'),
+            bottom: document.querySelector('.crt-bottom img'),
+        };
+
+        // 現在の回転角度から、いまカメラの方を向いている面を計算する
+        // （どの面をタップしても、そのときDOM上で一番手前かどうかをブラウザに頼らず判定するため）
+        const getFrontFacingFace = () => {
+            const rx = cubeRotX * Math.PI / 180;
+            const ry = cubeRotY * Math.PI / 180;
+            const cosRx = Math.cos(rx), sinRx = Math.sin(rx);
+            const cosRy = Math.cos(ry), sinRy = Math.sin(ry);
+
+            let bestName = 'front';
+            let bestZ = -Infinity;
+            for (const name in CUBE_FACE_NORMALS) {
+                const [x, y, z] = CUBE_FACE_NORMALS[name];
+                // rotateY を先に適用
+                const x1 = x * cosRy + z * sinRy;
+                const y1 = y;
+                const z1 = -x * sinRy + z * cosRy;
+                // 続けて rotateX を適用し、カメラ方向（z）成分だけを見る
+                const z2 = y1 * sinRx + z1 * cosRx;
+                if (z2 > bestZ) {
+                    bestZ = z2;
+                    bestName = name;
+                }
+            }
+            return bestName;
+        };
+
         const cubeDragStart = (x, y) => {
             cubeDragging = true;
             cubeDragMoved = false;
@@ -636,7 +684,8 @@
             cubeDragging = false;
             heroCrt.classList.remove('is-dragging');
             if (!cubeDragMoved) {
-                fullscreenImg.src = heroPhoto.src;
+                const faceName = getFrontFacingFace();
+                fullscreenImg.src = cubeFaceImgs[faceName].src;
                 overlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
