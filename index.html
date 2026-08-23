@@ -103,116 +103,62 @@
             z-index: 10;
         }
 
-        /* 表紙のメイン画像：斜め視点のブラウン管モニター（小型） */
+        /* 表紙のメイン画像：ドラッグで回せる、線+光の立方体 */
         .crt-stage {
+            --cube-size: clamp(190px, 42vw, 280px);
             position: relative;
             z-index: 5;
-            width: 100%;
-            max-width: min(70vw, 260px);
             margin: 0 auto;
-            perspective: 1000px;
-        }
-
-        /* 地面の影（奥行きの錯覚を支える） */
-        .crt-stage::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            bottom: -6%;
-            width: 78%;
-            height: 14%;
-            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, transparent 72%);
-            transform: translateX(-50%);
-            z-index: -1;
+            width: var(--cube-size);
+            perspective: 1200px;
         }
 
         .crt-object {
             position: relative;
-            width: 100%;
-            aspect-ratio: 4 / 3;
+            width: var(--cube-size);
+            height: var(--cube-size);
+            margin: 0 auto;
             transform-style: preserve-3d;
-            transform: rotateX(12deg) rotateY(-26deg);
-            transition: transform 0.6s ease;
-            cursor: pointer;
+            cursor: grab;
+            touch-action: none;
         }
 
-        .crt-object:hover {
-            transform: rotateX(10deg) rotateY(-22deg);
+        .crt-object.is-dragging {
+            cursor: grabbing;
         }
 
         .crt-face {
             position: absolute;
-            backface-visibility: hidden;
-        }
-
-        /* 正面：ベゼル＋画面 */
-        .crt-front {
             inset: 0;
-            transform: translateZ(80px);
-            border-radius: 10px;
-            padding: 20px 20px 24px 20px;
-            background: linear-gradient(150deg, #6e3f2f 0%, #3a1c14 55%, #170908 100%);
-            box-shadow:
-                0 0 0 1px rgba(255, 200, 180, 0.14) inset,
-                0 18px 40px rgba(0, 0, 0, 0.8),
-                0 0 30px rgba(189, 30, 0, 0.55),
-                0 0 90px rgba(189, 30, 0, 0.4);
-        }
-
-        /* 側面：奥に向かって窄まる、ブラウン管特有の厚み */
-        .crt-side {
-            top: 0;
-            right: -80px;
-            width: 80px;
-            height: 100%;
-            background: linear-gradient(90deg, #33170f 0%, #4a2419 55%, #190a08 100%);
-            transform-origin: left center;
-            transform: rotateY(90deg);
-            clip-path: polygon(0% 0%, 100% 16%, 100% 84%, 0% 100%);
-        }
-
-        .crt-top {
-            left: 0;
-            top: -80px;
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(0deg, #33170f 0%, #8a4a30 55%, #4a2419 100%);
-            transform-origin: center bottom;
-            transform: rotateX(-90deg);
-            clip-path: polygon(0% 0%, 100% 0%, 84% 100%, 16% 100%);
-        }
-
-        /* ブラウン管の「画面」部分 */
-        .crt-screen {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            width: var(--cube-size);
+            height: var(--cube-size);
             overflow: hidden;
-            border-radius: 5px;
             background: #000;
-            box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.9);
-            animation: cinemaFlickerExtreme 0.08s infinite;
+            border: 1.4px solid rgba(255, 150, 100, 0.9);
+            box-shadow:
+                0 0 6px rgba(189, 40, 0, 0.85),
+                0 0 22px rgba(189, 40, 0, 0.5),
+                0 0 60px rgba(189, 40, 0, 0.25);
         }
 
-        .crt-screen img {
-            position: relative;
-            z-index: 1;
+        .crt-face img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: contrast(110%) brightness(96%) saturate(108%);
-            transition: filter 0.5s ease, opacity 0.6s ease;
+            filter: contrast(108%) brightness(96%) saturate(106%);
+            -webkit-user-drag: none;
+            user-drag: none;
         }
 
         /* 走査線 */
-        .crt-screen::before {
+        .crt-face::after {
             content: "";
             position: absolute;
             inset: 0;
             background: repeating-linear-gradient(
                 to bottom,
-                rgba(0, 0, 0, 0.32) 0px,
-                rgba(0, 0, 0, 0.32) 1px,
+                rgba(0, 0, 0, 0.28) 0px,
+                rgba(0, 0, 0, 0.28) 1px,
                 transparent 2px,
                 transparent 3px
             );
@@ -221,21 +167,15 @@
             z-index: 2;
         }
 
-        /* ガラスの反射・フォスファーグロー・ビネット */
-        .crt-screen::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse at 24% 16%, rgba(255, 255, 255, 0.16), transparent 42%),
-                radial-gradient(ellipse at center, rgba(189, 60, 40, 0.12), transparent 60%),
-                radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.7) 100%);
-            pointer-events: none;
-            z-index: 2;
-        }
+        .crt-front  { transform: translateZ(calc(var(--cube-size) / 2)); }
+        .crt-back   { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2)); }
+        .crt-right  { transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2)); }
+        .crt-left   { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); }
+        .crt-top    { transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2)); }
+        .crt-bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); }
 
-        body.mode-monochrome .crt-screen img {
-            filter: grayscale(100%) contrast(130%);
+        body.mode-monochrome .crt-face img {
+            filter: grayscale(100%) contrast(125%) brightness(70%);
         }
 
         /* タイトルエリア */
@@ -558,13 +498,12 @@
     <section class="cover-page">
         <div class="crt-stage">
             <div class="crt-object" id="heroCrt">
-                <div class="crt-face crt-top"></div>
-                <div class="crt-face crt-side"></div>
-                <div class="crt-face crt-front">
-                    <div class="crt-screen">
-                        <img src="cover.jpg" alt="Cover Photo" id="heroPhoto">
-                    </div>
-                </div>
+                <div class="crt-face crt-front"><img src="cover.jpg" alt="Cover Photo" id="heroPhoto"></div>
+                <div class="crt-face crt-back"><img src="photo1.jpg" alt="Work 1"></div>
+                <div class="crt-face crt-right"><img src="photo2.jpg" alt="Work 2"></div>
+                <div class="crt-face crt-left"><img src="photo3.jpg" alt="Work 3"></div>
+                <div class="crt-face crt-top"><img src="photo4.jpg" alt="Work 4"></div>
+                <div class="crt-face crt-bottom"><img src="photo5.jpg" alt="Work 5"></div>
             </div>
         </div>
 
@@ -656,32 +595,70 @@
             }
         });
 
-        // ブラウン管モニター（表紙）クリックでも全画面表示
+        // 立方体をドラッグで回す。動かさずに離した場合はタップ扱いで全画面表示
         const heroCrt = document.getElementById('heroCrt');
         const heroPhoto = document.getElementById('heroPhoto');
 
-        heroCrt.addEventListener('click', () => {
-            fullscreenImg.src = heroPhoto.src;
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        let cubeRotX = -18;
+        let cubeRotY = -28;
+        let cubeDragging = false;
+        let cubeDragMoved = false;
+        let cubeLastX = 0;
+        let cubeLastY = 0;
+
+        const applyCubeRotation = () => {
+            heroCrt.style.transform = `rotateX(${cubeRotX}deg) rotateY(${cubeRotY}deg)`;
+        };
+        applyCubeRotation();
+
+        const cubeDragStart = (x, y) => {
+            cubeDragging = true;
+            cubeDragMoved = false;
+            cubeLastX = x;
+            cubeLastY = y;
+            heroCrt.classList.add('is-dragging');
+        };
+
+        const cubeDragMove = (x, y) => {
+            if (!cubeDragging) return;
+            const dx = x - cubeLastX;
+            const dy = y - cubeLastY;
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) cubeDragMoved = true;
+            cubeRotY += dx * 0.4;
+            cubeRotX -= dy * 0.4;
+            cubeLastX = x;
+            cubeLastY = y;
+            applyCubeRotation();
+        };
+
+        const cubeDragEnd = () => {
+            if (!cubeDragging) return;
+            cubeDragging = false;
+            heroCrt.classList.remove('is-dragging');
+            if (!cubeDragMoved) {
+                fullscreenImg.src = heroPhoto.src;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
+        heroCrt.addEventListener('mousedown', (e) => {
+            cubeDragStart(e.clientX, e.clientY);
+            e.preventDefault();
         });
+        window.addEventListener('mousemove', (e) => cubeDragMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', cubeDragEnd);
 
-        // ブラウン管に映す写真を表紙とギャラリー写真で順繰りに切り替える
-        const heroImages = ['cover.jpg'];
-        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
-            heroImages.push(`${IMAGE_PREFIX}${i}${IMAGE_EXT}`);
-        }
-        let heroIndex = 0;
-        const HERO_ROTATE_MS = 4500;
-
-        setInterval(() => {
-            heroIndex = (heroIndex + 1) % heroImages.length;
-            heroPhoto.style.opacity = '0';
-            setTimeout(() => {
-                heroPhoto.src = heroImages[heroIndex];
-                heroPhoto.style.opacity = '1';
-            }, 550);
-        }, HERO_ROTATE_MS);
+        heroCrt.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            cubeDragStart(t.clientX, t.clientY);
+        }, { passive: true });
+        window.addEventListener('touchmove', (e) => {
+            if (!cubeDragging) return;
+            const t = e.touches[0];
+            cubeDragMove(t.clientX, t.clientY);
+        }, { passive: true });
+        window.addEventListener('touchend', cubeDragEnd);
 
         const closeOverlay = () => {
             overlay.classList.remove('active');
