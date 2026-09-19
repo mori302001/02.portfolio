@@ -108,6 +108,76 @@
         }
 
         /* -----------------------------------------
+         * カスタムカーソル（ポインター精密操作可能な環境のみ、index.html と共通）
+         * ----------------------------------------- */
+        body.custom-cursor-active,
+        body.custom-cursor-active * {
+            cursor: none !important;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(189, 0, 0, 0.9);
+            box-shadow: 0 0 8px rgba(189, 0, 0, 0.9), 0 0 20px rgba(189, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, border 0.2s ease, opacity 0.2s ease;
+            opacity: 0;
+        }
+
+        .custom-cursor.is-visible {
+            opacity: 1;
+        }
+
+        .custom-cursor.is-hovering {
+            width: 34px;
+            height: 34px;
+            background: rgba(189, 0, 0, 0.15);
+            border: 1.4px solid rgba(189, 0, 0, 0.9);
+            box-shadow: 0 0 10px rgba(189, 0, 0, 0.6);
+        }
+
+        /* -----------------------------------------
+         * 画面全体に敷く薄いフィルムグレイン（index.html と共通）
+         * ----------------------------------------- */
+        .grain-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            pointer-events: none;
+            opacity: 0.05;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+            background-size: 120px 120px;
+            animation: grainShift 1s steps(6) infinite;
+        }
+
+        @keyframes grainShift {
+            0%   { transform: translate(0, 0); }
+            10%  { transform: translate(-2%, -4%); }
+            20%  { transform: translate(-6%, 2%); }
+            30%  { transform: translate(4%, -8%); }
+            40%  { transform: translate(-4%, 6%); }
+            50%  { transform: translate(2%, -2%); }
+            60%  { transform: translate(-8%, 4%); }
+            70%  { transform: translate(6%, -6%); }
+            80%  { transform: translate(-2%, 8%); }
+            90%  { transform: translate(4%, 2%); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .grain-overlay {
+                animation: none;
+            }
+        }
+
+        /* -----------------------------------------
          * ABOUT本体（テキスト中心）
          * ----------------------------------------- */
         .about-page {
@@ -239,6 +309,12 @@
     <!-- ページ遷移フェード -->
     <div class="page-transition" id="pageTransition"></div>
 
+    <!-- 画面全体に敷く薄いフィルムグレイン -->
+    <div class="grain-overlay"></div>
+
+    <!-- カスタムカーソル -->
+    <div class="custom-cursor" id="customCursor"></div>
+
     <div class="color-stream-wrapper" id="colorStreamWrapper">
         <div class="color-stream"></div>
     </div>
@@ -288,13 +364,33 @@
         });
 
         // 背景の朱赤エフェクトがマウス位置に緩やかに追従する視差（ポインター操作可能な環境のみ）
-        if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+        const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+        if (!prefersReducedMotion && isFinePointer) {
             const colorStreamWrapper = document.getElementById('colorStreamWrapper');
             const MAX_PARALLAX_SHIFT = 26; // px
             window.addEventListener('mousemove', (e) => {
                 const nx = (e.clientX / window.innerWidth - 0.5) * 2;
                 const ny = (e.clientY / window.innerHeight - 0.5) * 2;
                 colorStreamWrapper.style.transform = `translate(${nx * MAX_PARALLAX_SHIFT}px, ${ny * MAX_PARALLAX_SHIFT}px)`;
+            });
+        }
+
+        // カスタムカーソル：マウス位置に追従する赤い光点（ポインター操作可能な環境のみ）
+        if (isFinePointer) {
+            document.body.classList.add('custom-cursor-active');
+            const customCursor = document.getElementById('customCursor');
+
+            window.addEventListener('mousemove', (e) => {
+                customCursor.style.left = `${e.clientX}px`;
+                customCursor.style.top = `${e.clientY}px`;
+                customCursor.classList.add('is-visible');
+            });
+            document.addEventListener('mouseleave', () => customCursor.classList.remove('is-visible'));
+
+            document.querySelectorAll('a, button').forEach((el) => {
+                el.addEventListener('mouseenter', () => customCursor.classList.add('is-hovering'));
+                el.addEventListener('mouseleave', () => customCursor.classList.remove('is-hovering'));
             });
         }
     </script>
