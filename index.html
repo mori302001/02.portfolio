@@ -27,6 +27,9 @@
 
         html {
             overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+            overscroll-behavior-x: none;
         }
 
         body {
@@ -34,6 +37,12 @@
             color: #a6a092;
             font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
             overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            overscroll-behavior-x: none;
+            /* キューブなど個別に touch-action を持つ要素以外は左右へのパンを許可しない */
+            touch-action: pan-y;
             -webkit-font-smoothing: antialiased;
         }
 

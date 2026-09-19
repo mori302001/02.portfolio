@@ -20,11 +20,23 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+            overscroll-behavior-x: none;
+        }
+
         body {
             background-color: #0b0707;
             color: #a6a092;
             font-family: "Klee One", "Yu Mincho", "遊明朝", serif;
             overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            overscroll-behavior-x: none;
+            touch-action: pan-y;
             -webkit-font-smoothing: antialiased;
             min-height: 100vh;
         }
