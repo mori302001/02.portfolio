@@ -42,8 +42,17 @@
         }
 
         /* 背景の奥底で怪しく蠢く朱赤のエフェクト（index.html と共通） */
-        .color-stream {
+        /* マウス追従の視差を親要素に、明滅アニメーションを子要素に分離 */
+        .color-stream-wrapper {
             position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            transition: transform 0.7s ease-out;
+        }
+
+        .color-stream {
+            position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%,
                 #000000 10%,
@@ -51,10 +60,24 @@
                 rgba(189, 0, 0, 0.28) 60vmax,
                 #000000 100%
             );
-            z-index: 1;
             animation: delicateZappingWave 6s ease-in-out infinite alternate;
             filter: blur(12px);
             pointer-events: none;
+        }
+
+        /* ページ遷移フェード（index.html と共通） */
+        .page-transition {
+            position: fixed;
+            inset: 0;
+            background: #0b0707;
+            z-index: 9999;
+            opacity: 1;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-transition.hidden {
+            opacity: 0;
         }
 
         @keyframes delicateZappingWave {
@@ -213,7 +236,12 @@
 </head>
 <body>
 
-    <div class="color-stream"></div>
+    <!-- ページ遷移フェード -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <div class="color-stream-wrapper" id="colorStreamWrapper">
+        <div class="color-stream"></div>
+    </div>
 
     <a href="index.html" class="nav-link">WORK</a>
 
@@ -238,6 +266,38 @@
         </a>
         <p class="footer-copyright">&copy; 2026 saisaki. All rights reserved.</p>
     </footer>
+
+    <script>
+        // モーション演出を抑えたいユーザーへの配慮
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ページ遷移フェード：読み込み時にフェードイン、ページ離脱時にフェードアウトしてから遷移
+        const pageTransition = document.getElementById('pageTransition');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => pageTransition.classList.add('hidden'));
+        });
+
+        document.querySelectorAll('.nav-link').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (!href) return;
+                e.preventDefault();
+                pageTransition.classList.remove('hidden');
+                setTimeout(() => { window.location.href = href; }, 480);
+            });
+        });
+
+        // 背景の朱赤エフェクトがマウス位置に緩やかに追従する視差（ポインター操作可能な環境のみ）
+        if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+            const colorStreamWrapper = document.getElementById('colorStreamWrapper');
+            const MAX_PARALLAX_SHIFT = 26; // px
+            window.addEventListener('mousemove', (e) => {
+                const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+                const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+                colorStreamWrapper.style.transform = `translate(${nx * MAX_PARALLAX_SHIFT}px, ${ny * MAX_PARALLAX_SHIFT}px)`;
+            });
+        }
+    </script>
 
 </body>
 </html>

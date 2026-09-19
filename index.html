@@ -50,19 +50,42 @@
         }
 
         /* 背景の奥底で怪しく蠢く朱赤のエフェクト */
+        /* マウス追従の視差を親要素に、明滅アニメーションを子要素に分離 */
+        .color-stream-wrapper {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            transition: transform 0.7s ease-out;
+        }
+
         .color-stream {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, 
-                #000000 10%, 
-                rgba(189, 0, 0, 0.22) 45vmax, 
-                rgba(189, 0, 0, 0.28) 60vmax, 
+            background: radial-gradient(circle at 50% 50%,
+                #000000 10%,
+                rgba(189, 0, 0, 0.22) 45vmax,
+                rgba(189, 0, 0, 0.28) 60vmax,
                 #000000 100%
             );
-            z-index: 1;
             animation: delicateZappingWave 6s ease-in-out infinite alternate;
-            filter: blur(12px); 
+            filter: blur(12px);
             pointer-events: none;
+        }
+
+        /* ページ遷移フェード（暗転してから遷移） */
+        .page-transition {
+            position: fixed;
+            inset: 0;
+            background: #0b0707;
+            z-index: 9999;
+            opacity: 1;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-transition.hidden {
+            opacity: 0;
         }
 
         @keyframes delicateZappingWave {
@@ -212,6 +235,30 @@
         @keyframes titleBreathing {
             0%, 100% { opacity: 0.85; filter: contrast(100%); }
             50% { opacity: 1; filter: contrast(115%); }
+        }
+
+        /* 数秒に一度、ノイズのように一瞬だけ乱れるグリッチ */
+        .cover-title.glitching {
+            animation: titleBreathing 6s ease-in-out infinite, titleGlitch 0.28s steps(2, end) 2;
+        }
+
+        @keyframes titleGlitch {
+            0%, 100% {
+                transform: translate(0, 0);
+                text-shadow: 2px 2px 0px rgba(0, 0, 0, 1), 4px 4px 0px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(0, 0, 0, 0.9);
+            }
+            25% {
+                transform: translate(-3px, 1px);
+                text-shadow: -3px 0 rgba(189, 0, 0, 0.8), 3px 0 rgba(120, 200, 200, 0.5), 0px 0px 10px rgba(0, 0, 0, 0.9);
+            }
+            50% {
+                transform: translate(3px, -1px);
+                text-shadow: 3px 0 rgba(189, 0, 0, 0.8), -3px 0 rgba(120, 200, 200, 0.5), 0px 0px 10px rgba(0, 0, 0, 0.9);
+            }
+            75% {
+                transform: translate(-1px, 0);
+                text-shadow: 2px 2px 0px rgba(0, 0, 0, 1), 4px 4px 0px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(0, 0, 0, 0.9);
+            }
         }
 
         /* スクロールサイン ▼ */
@@ -500,8 +547,13 @@
 </head>
 <body>
 
-    <!-- 背景の奥底で怪しく蠢く朱赤のエフェクト -->
-    <div class="color-stream"></div>
+    <!-- ページ遷移フェード -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- 背景の奥底で怪しく蠢く朱赤のエフェクト（マウス位置で微妙に揺れる） -->
+    <div class="color-stream-wrapper" id="colorStreamWrapper">
+        <div class="color-stream"></div>
+    </div>
 
     <a href="about.html" class="nav-link">ABOUT</a>
 
@@ -553,10 +605,54 @@
      * JavaScript: 動的画像生成 & シンプル2トグル制御
      * ----------------------------------------- -->
     <script>
+        // モーション演出を抑えたいユーザーへの配慮（自動回転・グリッチ・視差を無効化）
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ページ遷移フェード：読み込み時にフェードイン、ページ離脱時にフェードアウトしてから遷移
+        const pageTransition = document.getElementById('pageTransition');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => pageTransition.classList.add('hidden'));
+        });
+
+        document.querySelectorAll('.nav-link').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (!href) return;
+                e.preventDefault();
+                pageTransition.classList.remove('hidden');
+                setTimeout(() => { window.location.href = href; }, 480);
+            });
+        });
+
+        // 背景の朱赤エフェクトがマウス位置に緩やかに追従する視差（ポインター操作可能な環境のみ）
+        if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+            const colorStreamWrapper = document.getElementById('colorStreamWrapper');
+            const MAX_PARALLAX_SHIFT = 26; // px
+            window.addEventListener('mousemove', (e) => {
+                const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+                const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+                colorStreamWrapper.style.transform = `translate(${nx * MAX_PARALLAX_SHIFT}px, ${ny * MAX_PARALLAX_SHIFT}px)`;
+            });
+        }
+
+        // タイトルが数秒に一度、ノイズのように一瞬だけ乱れるグリッチ演出
+        if (!prefersReducedMotion) {
+            const coverTitle = document.querySelector('.cover-title');
+            const scheduleGlitch = () => {
+                const delay = 1500 + Math.random() * 1500;
+                setTimeout(() => {
+                    coverTitle.classList.add('glitching');
+                    setTimeout(() => coverTitle.classList.remove('glitching'), 280);
+                    scheduleGlitch();
+                }, delay);
+            };
+            scheduleGlitch();
+        }
+
         // 設定：写真は27枚に設定
-        const TOTAL_PHOTOS = 27;         
-        const IMAGE_PREFIX = "photo";    
-        const IMAGE_EXT = ".jpg";        
+        const TOTAL_PHOTOS = 27;
+        const IMAGE_PREFIX = "photo";
+        const IMAGE_EXT = ".jpg";
 
         // 写真マトリクスの自動生成
         const matrixContainer = document.getElementById('photoMatrix');
@@ -636,6 +732,25 @@
         };
         applyCubeRotation();
 
+        // 操作していない間はゆっくり自動回転させ、ドラッグ中/直後は止める
+        const AUTO_ROTATE_RESUME_DELAY_MS = 1200;
+        const AUTO_ROTATE_SPEED_DEG_PER_MS = 0.012;
+        let lastCubeInteractionAt = -Infinity;
+
+        if (!prefersReducedMotion) {
+            let lastFrameAt = performance.now();
+            const autoRotateTick = (now) => {
+                const dt = now - lastFrameAt;
+                lastFrameAt = now;
+                if (!cubeDragging && now - lastCubeInteractionAt > AUTO_ROTATE_RESUME_DELAY_MS) {
+                    cubeRotY += dt * AUTO_ROTATE_SPEED_DEG_PER_MS;
+                    applyCubeRotation();
+                }
+                requestAnimationFrame(autoRotateTick);
+            };
+            requestAnimationFrame(autoRotateTick);
+        }
+
         // 各面の向き（ローカル座標での法線）
         const CUBE_FACE_NORMALS = {
             front:  [0, 0, 1],
@@ -685,6 +800,7 @@
             cubeDragMoved = false;
             cubeLastX = x;
             cubeLastY = y;
+            lastCubeInteractionAt = performance.now();
             heroCrt.classList.add('is-dragging');
         };
 
@@ -703,6 +819,7 @@
         const cubeDragEnd = () => {
             if (!cubeDragging) return;
             cubeDragging = false;
+            lastCubeInteractionAt = performance.now();
             heroCrt.classList.remove('is-dragging');
             if (!cubeDragMoved) {
                 const faceName = getFrontFacingFace();
