@@ -265,6 +265,13 @@
             cursor: pointer;
             position: relative;
             animation: frameFloat 12s ease-in-out infinite alternate;
+            /* スクロールで視界に入るまでは非表示にし、1枚ずつ浮かび上がらせる */
+            opacity: 0;
+            transition: opacity 1.1s ease;
+        }
+
+        .matrix-item.is-visible {
+            opacity: 1;
         }
 
         /* 27枚非同期設定 */
@@ -574,6 +581,20 @@
             item.appendChild(img);
             matrixContainer.appendChild(item);
         }
+
+        // スクロールで視界に入った写真から順にフェードイン表示
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+
+        document.querySelectorAll('.matrix-item').forEach((item) => {
+            revealObserver.observe(item);
+        });
 
         // ▼ ボタンのスクロール処理
         const galleryBtn = document.getElementById('galleryBtn');
